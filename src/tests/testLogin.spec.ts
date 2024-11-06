@@ -1,6 +1,12 @@
-import { Builder, By, WebDriver } from "selenium-webdriver";
-import { HomePage } from "../pages/hopePage";
+import { Builder, By, WebDriver, until } from "selenium-webdriver";
+import { HomePage } from "../pages/homePage";
 import { LoginPage } from "../pages/loginPage";
+
+const BASE_URL = "http://www.automationpractice.pl/index.php";
+const VALID_EMAIL = "testuser@example.com";
+const VALID_PASSWORD = "Password123";
+const INVALID_EMAIL = "invaliduser@example.com";
+const INVALID_PASSWORD = "WrongPassword";
 
 describe("Login Tests", () => {
   let driver: WebDriver;
@@ -17,21 +23,20 @@ describe("Login Tests", () => {
     await driver.quit();
   });
 
-  test("Login with valid credentials", async () => {
-    await homePage.open("http://www.automationpractice.pl/index.php");
+  beforeEach(async () => {
+    await homePage.open(BASE_URL);
     await homePage.clickSignIn();
-    await loginPage.login("testuser@example.com", "Password123");
+  });
 
-    const accountPageHeader = await driver.findElement(By.css(".page-heading")).getText();
-    expect(accountPageHeader).toBe("AUTHENTICATION");
+  test("Login with valid credentials", async () => {
+    await loginPage.login(VALID_EMAIL, VALID_PASSWORD);
+    const accountPageHeader = await driver.wait(until.elementLocated(By.css(".page-heading")), 5000).getText();
+    expect(accountPageHeader).toBe("MY ACCOUNT");
   });
 
   test("Login with invalid credentials", async () => {
-    await homePage.open("http://www.automationpractice.pl/index.php");
-    await homePage.clickSignIn();
-    await loginPage.login("invaliduser@example.com", "WrongPassword");
-
-    const errorMessage = await driver.findElement(By.css(".alert-danger")).getText();
+    await loginPage.login(INVALID_EMAIL, INVALID_PASSWORD);
+    const errorMessage = await driver.wait(until.elementLocated(By.css(".alert-danger")), 5000).getText();
     expect(errorMessage).toContain("Authentication failed.");
   });
 });

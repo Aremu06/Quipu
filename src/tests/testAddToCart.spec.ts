@@ -1,7 +1,9 @@
 import { Builder, WebDriver, By } from "selenium-webdriver";
-import { HomePage } from "../pages/hopePage";
+import { HomePage } from "../pages/homePage";
 import { SearchResultsPage } from "../pages/searchPage";
 import { ProductPage } from "../pages/productsPage";
+
+const BASE_URL = "http://www.automationpractice.pl/index.php";
 
 describe("Add to Cart Tests", () => {
   let driver: WebDriver;
@@ -20,13 +22,14 @@ describe("Add to Cart Tests", () => {
     await driver.quit();
   });
 
+  beforeEach(async ()=>{
+    await homePage.open(BASE_URL);
+  })
+
   test("Add product to cart", async () => {
-    await homePage.open("http://www.automationpractice.pl/index.php");
     await homePage.searchForProduct("dress");
 
     if (await searchResultsPage.hasResults()) {
-      const firstProduct = await driver.findElement(By.css(".product_list .product-container"));
-      await firstProduct.click();
       await productPage.addToCart();
 
       const isConfirmationVisible = await productPage.isProductAddedConfirmationVisible();

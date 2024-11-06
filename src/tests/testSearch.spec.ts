@@ -1,6 +1,8 @@
 import { Builder, WebDriver } from "selenium-webdriver";
-import { HomePage } from "../pages/hopePage";
+import { HomePage } from "../pages/homePage";
 import { SearchResultsPage } from "../pages/searchPage";
+
+const BASE_URL = "http://www.automationpractice.pl/index.php"
 
 describe("Search Tests", () => {
   let driver: WebDriver;
@@ -17,8 +19,11 @@ describe("Search Tests", () => {
     await driver.quit();
   });
 
+  beforeEach(async ()=>{
+    await homePage.open(BASE_URL);
+  })
+
   test("Search for an existing product", async () => {
-    await homePage.open("http://www.automationpractice.pl/index.php");
     await homePage.searchForProduct("dress");
 
     const hasResults = await searchResultsPage.hasResults();
@@ -26,7 +31,6 @@ describe("Search Tests", () => {
   });
 
   test("Search for a non-existent product", async () => {
-    await homePage.open("http://www.automationpractice.pl/index.php");
     await homePage.searchForProduct("xyz123");
 
     const noResultsMessage = await searchResultsPage.getNoResultsMessage();
